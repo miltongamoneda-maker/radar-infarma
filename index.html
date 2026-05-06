@@ -221,7 +221,7 @@ async function sbFetch(path,opts={}){
         </div>
         <div class="form-group" style="margin-bottom:0">
           <label class="form-label">Canal <span style="font-weight:400;color:var(--text-hint)">(selecciona primero el departamento)</span></label>
-          <select class="form-select" id="gt-canal-select" onchange="checkGTAlreadyAnswered()" disabled>
+          <select class="form-select" id="gt-canal-select" onchange="" disabled>
             <option value="">— Selecciona canal —</option>
           </select>
         </div>
@@ -247,7 +247,7 @@ async function sbFetch(path,opts={}){
           <div class="char-count" id="gt-char-count">0 / 180</div>
         </div>
       </div>
-      <div id="gt-already-answered" class="banner banner-warn hidden"><span>⚠</span><span>Esta zona ya respondió la encuesta de Mentolina Manzanilla. Gracias por tu participación.</span></div>
+      <!-- duplicate check removed -->
       <div id="gt-submit-error" class="banner banner-fail hidden"><span>✕</span><span id="gt-submit-error-msg">Error al guardar. Intenta de nuevo.</span></div>
       <div class="mt-2">
         <button class="btn-mint" id="btn-gt-submit" onclick="submitGTResponse()">
@@ -352,7 +352,7 @@ function goHome(){showScreen("role");document.getElementById("header-role-badge"
 function setLoading(show,msg="Cargando..."){document.getElementById("loading-overlay").classList.toggle("hidden",!show);document.getElementById("loading-msg").textContent=msg;}
 
 function initDeptoSelect(){const sel=document.getElementById("gt-depto-select");DEPARTAMENTOS.forEach(d=>{const o=document.createElement("option");o.value=d;o.textContent=d;sel.appendChild(o);});}
-function onDeptoChange(){const cs=document.getElementById("gt-canal-select");const d=document.getElementById("gt-depto-select").value;cs.innerHTML='<option value="">— Selecciona canal —</option>';if(d){CANALES.forEach(c=>{const o=document.createElement("option");o.value=c;o.textContent=c;cs.appendChild(o);});cs.disabled=false;}else{cs.disabled=true;}document.getElementById("gt-already-answered").classList.add("hidden");document.getElementById("btn-gt-submit").disabled=false;}
+function onDeptoChange(){const cs=document.getElementById("gt-canal-select");const d=document.getElementById("gt-depto-select").value;cs.innerHTML='<option value="">— Selecciona canal —</option>';if(d){CANALES.forEach(c=>{const o=document.createElement("option");o.value=c;o.textContent=c;cs.appendChild(o);});cs.disabled=false;}else{cs.disabled=true;}document.getElementById("btn-gt-submit").disabled=false;}
 function getZona(){const d=document.getElementById("gt-depto-select").value;const c=document.getElementById("gt-canal-select").value;return d&&c?c+" · "+d:"";}
 
 function selectRole(role){
@@ -366,10 +366,7 @@ function selectRating(val){selectedRating=val;document.querySelectorAll(".rating
 function clearRatingButtons(){document.querySelectorAll(".rating-btn").forEach(b=>b.classList.remove("selected"));}
 function updateCharCount(el){const l=el.value.length;const cc=document.getElementById("gt-char-count");cc.textContent=l+" / 180";cc.className="char-count"+(l>150?" warn":"");}
 
-async function checkGTAlreadyAnswered(){
-  const zona=getZona();if(!zona)return;
-  try{const rows=await sbFetch(`/rest/v1/radar_infarma_responses?producto=eq.${encodeURIComponent(PRODUCTO)}&zona=eq.${encodeURIComponent(zona)}&select=id&limit=1`);const already=rows.length>0;document.getElementById("gt-already-answered").classList.toggle("hidden",!already);document.getElementById("btn-gt-submit").disabled=already;}catch(e){}
-}
+// duplicate check removed — multiple responses per zone allowed
 
 async function submitGTResponse(){
   const zona=getZona();const text=document.getElementById("gt-response-input").value.trim();
@@ -399,7 +396,6 @@ function resetGT(){
   document.getElementById("gt-canal-select").disabled=true;
   document.getElementById("gt-response-input").value="";
   document.getElementById("gt-char-count").textContent="0 / 180";
-  document.getElementById("gt-already-answered").classList.add("hidden");
   document.getElementById("gt-submit-error").classList.add("hidden");
   document.getElementById("rating-validation").classList.add("hidden");
   const btn=document.getElementById("btn-gt-submit");btn.disabled=false;
